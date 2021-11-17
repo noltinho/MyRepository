@@ -1,6 +1,6 @@
 # Readme <a href='https://osf.io/zcvbs/'><img src='worcs_icon.png' align="right" height="139" /></a>
 
-<!-- Please add a brief introduction to explain what the project is about    -->
+<!-- This is my first try usign GitHub. Hence, if anyone is actually reading this, don't even bother.    -->
 
 ## Where do I start?
 

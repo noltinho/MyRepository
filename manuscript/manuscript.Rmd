@@ -1,0 +1,101 @@
+---
+title: "Untitled"
+output: github_document
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+bibliography: references.bib
+knit: worcs::cite_all
+---
+
+```{r setup, include=FALSE}
+library("worcs")
+# We recommend that you prepare your raw data for analysis in 'prepare_data.R',
+# and end that file with either open_data(yourdata), or closed_data(yourdata).
+# Then, uncomment the line below to load the original or synthetic data
+# (whichever is available), to allow anyone to reproduce your code:
+# load_data()
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This manuscript uses the Workflow for Open Reproducible Code in Science [@vanlissaWORCSWorkflowOpen2020] to ensure reproducibility and transparency. All code <!--and data--> are available at <git@github.com:noltinho/MyRepository.git>.
+
+This is an example of a non-essential citation [@@vanlissaWORCSWorkflowOpen2020]. If you change the rendering function to `worcs::cite_essential`, it will be removed.
+
+<!--The function below inserts a notification if the manuscript is knit using synthetic data. Make sure to insert it after load_data().-->
+`r notify_synthetic()`
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
+
+```{r cars}
+# inspect dataset before imputation
+md.pattern(ca.imputation)
+imp <- mice(ca.imputation, maxit=0, print=F)
+
+flux <- flux(ca.imputation)
+out.flux <- row.names(flux)[flux$outflux < 0.5] # OpinionPak is excluded
+
+out.log <- imp$loggedEvents # No peculiar variables present
+out <- unique(c(out.flux,out.log))
+
+ca.imputation2 <- ca.imputation[, !names(ca.imputation) %in% out]
+
+# remove variable totwt from set of predictors
+pred <- make.predictorMatrix(ca.imputation2)
+pred
+pred[, "totwt"] <- 0
+pred
+
+# remove variables OpinionRussia and TrustGov_M
+ca.imputation2 <- subset(ca.imputation2, select=-c(OpinionRussia,Region_M))
+
+# change imputation method for ordinal variables
+meth <- make.method(ca.imputation2)
+meth
+meth[c("NetComp","nextyear_M","Statements1","CanBuy_M","TodayEcSit_M")] <- "polr"
+meth
+
+# perform multiple imputation
+imp <- mice(ca.imputation2, method=meth, predictorMatrix=pred, maxit=5, seed=123)
+imp$loggedEvents
+imp <- mice.mids(imp, maxit=5)
+
+# inspect convergences
+plot(imp)
+
+# specify survey design with imputed data
+imp_list <- lapply(1:5 , function(n) complete(imp, action = n))
+ca.design.imp <- svydesign(ids=~SamPt, weight=~totwt, data=imputationList(imp_list))
+
+fit <- with(ca.design.imp, svyglm(ThreatHi ~ Gender+AgeGroup2+GeoCode,
+                                  family=binomial(link="logit")))
+
+# get response propensities from the imputed data
+predm <- with(imp_list, lapply(getfit(fit), predict, type ="response"))
+
+# extract the predicted values and the covariance matrix
+pred.values <- MIextract(predm, fun=coef)
+cov.matrix <- MIextract(predm, fun=vcov)
+
+# pool the predicted values and add them as variable to the dataframe
+pooled.pred <- pool_mi(qhat=pred.values, u=cov.matrix)
+ca.imputation2$pooled.est <- summary(pooled.pred)$results
+
+# calculate the averge response propensity
+mean(ca.imputation2$pooled.est) # 0.403
+hist(ca.imputation2$pooled.est)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

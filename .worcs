@@ -1,0 +1,8 @@
+worcs_version: 0.1.8
+creator: noltinho
+entry_point: manuscript/manuscript.Rmd
+data:
+  ca.barometer.csv:
+    codebook: codebook_ca.barometer.Rmd
+checksums:
+  ca.barometer.csv: f56479b9a9f086ce9c4db532801fe268
