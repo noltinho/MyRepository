@@ -12,3 +12,5 @@
 .Rproj.user
 !ca.barometer.csv
 !codebook_ca.barometer.csv
+!ca.imputation.csv
+!codebook_ca.imputation.csv
