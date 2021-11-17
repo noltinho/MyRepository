@@ -19,7 +19,7 @@ library(miceadds)
 
 rm(list=ls(all=TRUE))
 getwd()
-setwd("/Users/noltinho/Git_projects/first_project/data")
+setwd("/Users/noltinho/Git_projects/first_project")
 ca.barometer <- read_excel('central_asia_barometer.xlsx')
 str(ca.barometer)
 set.seed(123)
@@ -153,3 +153,11 @@ ca.imputation$Region_M <- as.factor(ca.imputation$Region_M)
 ca.imputation$TrustGov_M <- as.factor(ca.imputation$TrustGov_M)
 
 str(ca.imputation)
+
+open_data(ca.imputation, "ca.imputation.csv")
+git_update(message=paste0("first try"))
+
+
+
+
+
