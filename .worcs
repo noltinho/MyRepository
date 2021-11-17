@@ -2,10 +2,7 @@ worcs_version: 0.1.8
 creator: noltinho
 entry_point: manuscript/manuscript.Rmd
 data:
-  ca.barometer.csv:
-    codebook: codebook_ca.barometer.Rmd
   ca.imputation.csv:
     codebook: codebook_ca.imputation.Rmd
 checksums:
-  ca.barometer.csv: f56479b9a9f086ce9c4db532801fe268
   ca.imputation.csv: 7263db59a5afa5ce6f201c002e08b335
